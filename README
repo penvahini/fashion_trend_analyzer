@@ -1,6 +1,6 @@
-
-
 # Fashion Trend Analyzer
+
+**[Try the live demo here](https://fashion-trend-analyzer.streamlit.app/)**
 
 Fashion Trend Analyzer is an end-to-end pipeline for analyzing e-commerce fashion images. It scrapes product images, performs segmentation, builds image representations, clusters them into style groups, and generates natural-language summaries and keywords for each cluster.
 
@@ -18,42 +18,42 @@ A **Streamlit dashboard** is included to visualize results.
 ```
 fashion_trend_analyzer/
 ├── src/                     # All scripts
-│   ├── websraper.py   # Scraper for product images
-│   ├── segment.py              # YOLO + SAM segmentation
-│   ├── cluster_peipeline.py   # Current CLIP pipeline: embeddings + clustering
-│   ├── old_cluster_pipeline.py      # Legacy autoencoder pipeline
-│   ├── label_clusters.py       # Cluster labeling with OpenAI multimodal LLM
-│   ├── dashboard.py            # Streamlit dashboard
-│   └── autoencoder_train.py    # legacy file that trains the custom autoencoder
+│   ├── websraper.py         # Scraper for product images
+│   ├── segment.py           # YOLO + SAM segmentation
+│   ├── cluster_pipeline.py  # Current CLIP pipeline: embeddings + clustering
+│   ├── old_cluster_pipeline.py  # Legacy autoencoder pipeline
+│   ├── label_clusters.py    # Cluster labeling with OpenAI multimodal LLM
+│   ├── dashboard.py         # Streamlit dashboard
+│   └── autoencoder_train.py # Legacy file that trains the custom autoencoder
 │
 ├── images/
-│   ├── original_images/        # Scraped originals
-│   ├── segmented_images/       # YOLO+SAM segmented items
-│   └── clustered_images/       # segmented items organized per cluster + labels.csv/json
+│   ├── original_images/     # Scraped originals
+│   ├── segmented_images/    # YOLO+SAM segmented items
+│   └── clustered_images/    # Segmented items organized per cluster + labels.csv/json
 │
-├── models/                     # Models & weights
-│   ├── sam_weights.pth         # Segment Anything (not included, large file)
-│   ├── yolo_weights.pt         # YOLO checkpoint
-│   ├── encoder.h5              # Legacy encoder (autoencoder)
-│   ├── autoencoder.h5          # Legacy full autoencoder
+├── models/                  # Models & weights
+│   ├── sam_weights.pth      # Segment Anything (not included, large file)
+│   ├── yolo_weights.pt      # YOLO checkpoint
+│   ├── encoder.h5           # Legacy encoder (autoencoder)
+│   ├── autoencoder.h5       # Legacy full autoencoder
 │   └── best_autoencoder.weights.h5  # Legacy best weights from training
 │
 ├── data/
-│   ├── clip_embeddings.npy     # Embedding matrix (N x D)
-│   └── clip_filenames.json     # Aligned filenames
+│   ├── clip_embeddings.npy  # Embedding matrix (N x D)
+│   └── clip_filenames.json  # Aligned filenames
 │
 ├── logs/
-│   ├── training_loss.png       # Legacy autoencoder training curve
-│   ├── run_meta.json           # Run metadata
+│   ├── training_loss.png    # Legacy autoencoder training curve
+│   ├── run_meta.json        # Run metadata
 │   ├── autoencoder_history.json
 │   └── autoencoder_summary.txt
 │
 ├── deployment/
-│   └── run_pipeline.sh         # Convenience script for full pipeline
+│   └── run_pipeline.sh      # Convenience script for full pipeline
 │
 ├── requirements.txt
 ├── .gitignore
-├── .env                        # Environment vars (API keys, etc.)
+├── .env                     # Environment vars (API keys, etc.)
 └── README.md
 ```
 
@@ -94,9 +94,9 @@ OPENAI_API_KEY=sk-xxxxxx
 
 ## Pipelines
 
-### 1. Scraper (`scrape_reformation.py`)
+### 1. Scraper (`websraper.py`)
 
-* Uses **Playwright** to load dynamic fashion product pages from Reformations New Collection (scrolls to fetch more).
+* Uses **Playwright** to load dynamic fashion product pages from Reformation's New Collection (scrolls to fetch more).
 * Parses HTML with **BeautifulSoup**.
 * Downloads and saves product images → `images/original_images/`.
 
@@ -110,14 +110,13 @@ OPENAI_API_KEY=sk-xxxxxx
 
 ---
 
-### 3A. Current CV Pipeline (`clip_embed_cluster.py`)
+### 3A. Current CV Pipeline (`cluster_pipeline.py`)
 
 * Loads segmented images.
 * Encodes each image into a **CLIP embedding** (ViT-B/32).
-* Reduces dimensions with **PCA** (retains \~90% variance).
+* Reduces dimensions with **PCA** (retains ~90% variance).
 * Runs **KMeans** clustering (default k=7).
 * Saves:
-
   * Cluster assignments → `images/clustered_images/clusters.csv`
   * Clustered image copies → `images/clustered_images/cluster_<id>/`
   * Cluster visualization → `images/clustered_images/cluster_plot.png`
@@ -125,7 +124,7 @@ OPENAI_API_KEY=sk-xxxxxx
 
 ---
 
-### 3B. Legacy CV Pipeline (`old_cv_pipeline.py`)
+### 3B. Legacy CV Pipeline (`old_cluster_pipeline.py`)
 
 * Uses **custom convolutional autoencoder** trained on segmented images.
 * Autoencoder compresses images into a latent vector (`encoder.h5`).
@@ -141,11 +140,9 @@ OPENAI_API_KEY=sk-xxxxxx
 * Selects **representative images per cluster** (nearest to centroid in embedding space).
 * Sends images to an **OpenAI multimodal LLM** (`gpt-4o-mini` by default).
 * Model generates:
-
   * **Keywords**: 4–6 concise descriptors (style, fabric, color, silhouette).
   * **Summary**: 1–2 sentence fashion trend description.
 * Writes results:
-
   * `images/clustered_images/cluster_labels.json`
   * `images/clustered_images/cluster_labels.csv`
 
@@ -156,14 +153,14 @@ This step upgrades clusters from **raw numbers** into **human-readable fashion i
 ### 5. Dashboard (`dashboard.py`)
 
 * **Streamlit app** for visual exploration.
+* **🌐 [Access the live dashboard](https://fashion-trend-analyzer.streamlit.app/)**
 * Displays per-cluster:
-
   * **Keywords**
   * **Summary**
   * **Original & segmented images** (side by side)
 * Sidebar includes cluster selection and cluster plot.
 
-Run:
+Run locally:
 
 ```bash
 streamlit run src/dashboard.py
@@ -171,7 +168,7 @@ streamlit run src/dashboard.py
 
 ---
 
-##  Full Pipeline (one command)
+## Full Pipeline (one command)
 
 Use the provided script:
 
@@ -193,10 +190,10 @@ This runs:
 
 The `logs/` folder contains:
 
-* **training\_loss.png** — loss curve from legacy autoencoder training
-* **autoencoder\_history.json** — Keras history object
-* **autoencoder\_summary.txt** — model summary (layers, params)
-* **run\_meta.json** — run configuration metadata
+* **training_loss.png** — loss curve from legacy autoencoder training
+* **autoencoder_history.json** — Keras history object
+* **autoencoder_summary.txt** — model summary (layers, params)
+* **run_meta.json** — run configuration metadata
 
 Useful for reproducing or comparing old vs new pipelines.
 
@@ -207,13 +204,6 @@ Useful for reproducing or comparing old vs new pipelines.
 * **Legacy autoencoder**: required custom training; learned features but limited by dataset size & quality.
 * **CLIP embeddings**: pretrained on **400M image–text pairs**, capture robust visual–semantic features without training.
 * Result: CLIP clusters are more consistent, generalize better, and pair naturally with LLMs for labeling.
-
----
-
-## Non-local Viewing
-
-* **Streamlit Community Cloud** — host dashboard only (scraper/segmentation won’t run).
-* **Self-host on AWS/GCP/Azure VM** — run full pipeline + open dashboard on a public port.
 
 ---
 
