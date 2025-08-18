@@ -1,6 +1,6 @@
 # Fashion Trend Analyzer
 
-**🚀 [Try the live demo here](https://fashion-trend-analyzer.streamlit.app/)**
+**[Try the live demo here](https://fashion-trend-analyzer.streamlit.app/)**
 
 Fashion Trend Analyzer is an end-to-end pipeline for analyzing e-commerce fashion images. It scrapes product images, performs segmentation, builds image representations, clusters them into style groups, and generates natural-language summaries and keywords for each cluster.
 
