@@ -1,0 +1,8 @@
+{
+  "epochs": 30,
+  "batch_size": 16,
+  "val_split": 0.2,
+  "seed": 42,
+  "n_images": 40,
+  "mixed_precision": true
+}

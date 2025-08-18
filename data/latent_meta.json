@@ -1,0 +1,9 @@
+{
+  "k": 15,
+  "do_pca": true,
+  "variance": 0.9,
+  "random_state": 0,
+  "n_images": 40,
+  "dims_raw": 4096,
+  "dims_final": 14
+}

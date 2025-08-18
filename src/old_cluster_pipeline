@@ -1,0 +1,194 @@
+# src/old_cluster_pipeline.py
+
+
+from pathlib import Path
+import os, shutil, argparse, json
+import numpy as np
+import pandas as pd
+import cv2
+import matplotlib.pyplot as plt
+
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import UpSampling2D
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+# --------------------
+# Paths
+# --------------------
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SEG_DIR      = PROJECT_ROOT / "images" / "segmented_images"
+OUT_DIR      = PROJECT_ROOT / "images" / "clustered_images"
+MODELS_DIR   = PROJECT_ROOT / "models"
+DATA_DIR     = PROJECT_ROOT / "data"
+ENCODER_PATH = MODELS_DIR / "encoder.h5"
+AUTOENC_PATH = MODELS_DIR / "autoencoder.h5"
+
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+IMG_SIZE = (256, 256)
+
+# --------------------
+# IO helpers
+# --------------------
+def load_images(dir_path: Path):
+    exts = {".jpg", ".jpeg", ".png", ".webp"}
+    files = sorted([p for p in dir_path.iterdir() if p.suffix.lower() in exts])
+    if not files:
+        raise RuntimeError(f"No images in {dir_path}. Did you run segmentation?")
+    imgs, names = [], []
+    for f in files:
+        img = cv2.imread(str(f))
+        if img is None:
+            continue
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.resize(img, IMG_SIZE)
+        imgs.append(img.astype(np.float32) / 255.0)
+        names.append(f.name)
+    X = np.stack(imgs, axis=0)  # (N, 256, 256, 3)
+    return X, names
+
+def build_encoder_from_autoencoder(ae: Model) -> Model:
+    # Take layer just BEFORE first UpSampling2D (start of decoder) as bottleneck.
+    up_idx = None
+    for i, lyr in enumerate(ae.layers):
+        if isinstance(lyr, UpSampling2D):
+            up_idx = i
+            break
+    bottleneck_name = ae.layers[up_idx - 1].name if up_idx is not None else ae.layers[-1].name
+    return Model(inputs=ae.input, outputs=ae.get_layer(bottleneck_name).output)
+
+def load_encoder():
+    if ENCODER_PATH.exists():
+        print(f"[embed] Loading encoder: {ENCODER_PATH}")
+        return load_model(str(ENCODER_PATH))
+    elif AUTOENC_PATH.exists():
+        print(f"[embed] encoder.h5 not found. Loading autoencoder: {AUTOENC_PATH}")
+        ae = load_model(str(AUTOENC_PATH))
+        return build_encoder_from_autoencoder(ae)
+    else:
+        raise FileNotFoundError("Missing models/encoder.h5 and models/autoencoder.h5. Train the autoencoder first.")
+
+def embed_with_encoder(X, enc: Model, batch_size=32):
+    feats = enc.predict(X, batch_size=batch_size, verbose=1)
+    return feats.reshape(feats.shape[0], -1)
+
+# --------------------
+# Clustering + exports
+# --------------------
+def cluster_and_export(
+    filenames,
+    Z_raw,
+    k,
+    do_pca=True,
+    variance=0.90,
+    random_state=0,
+    overwrite=True,
+    save_latents=False
+):
+    # scale
+    scaler = StandardScaler()
+    Z_scaled = scaler.fit_transform(Z_raw)
+
+    # optional reduce
+    if do_pca:
+        pca_full = PCA().fit(Z_scaled)
+        n_comp = int(np.argmax(np.cumsum(pca_full.explained_variance_ratio_) >= variance)) + 1
+        pca = PCA(n_components=n_comp).fit(Z_scaled)
+        Z_r = pca.transform(Z_scaled)
+        print(f"[cluster] PCA -> {n_comp} comps to retain ~{int(variance*100)}% variance")
+    else:
+        Z_r = Z_scaled
+
+    # KMeans
+    km = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+    labels = km.fit_predict(Z_r)
+
+    # reset out dir
+    if overwrite and OUT_DIR.exists():
+        shutil.rmtree(OUT_DIR)
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # copy images into clusters
+    for name, lab in zip(filenames, labels):
+        src = SEG_DIR / name
+        cdir = OUT_DIR / f"cluster_{lab}"
+        cdir.mkdir(parents=True, exist_ok=True)
+        if src.exists():
+            shutil.copy(src, cdir / name)
+
+    # save csv
+    df = pd.DataFrame({"filename": filenames, "cluster": labels})
+    df.to_csv(OUT_DIR / "clusters.csv", index=False)
+
+    # quick 2D viz (of Z_r)
+    p2 = PCA(n_components=2).fit_transform(Z_r)
+    plt.figure(figsize=(7,6))
+    plt.scatter(p2[:,0], p2[:,1], c=labels, s=18)
+    plt.title(f"KMeans (k={k}) — PCA(2) viz")
+    plt.tight_layout()
+    plt.savefig(OUT_DIR / "cluster_plot.png", dpi=160)
+    plt.close()
+    print(f"[cluster] Wrote clusters to {OUT_DIR}")
+
+    # optionally save latent spaces
+    if save_latents:
+        np.save(DATA_DIR / "latent_spaces_raw.npy", Z_raw)
+        np.save(DATA_DIR / "latent_spaces_scaled.npy", Z_scaled)
+        np.save(DATA_DIR / ("latent_spaces_pca.npy" if do_pca else "latent_spaces_pca.npy"), Z_r)
+        # also a CSV with filenames for convenience
+        lat_df = pd.DataFrame(Z_r)
+        lat_df.insert(0, "filename", filenames)
+        lat_df.to_csv(DATA_DIR / "latent_spaces_pca.csv", index=False)
+
+        meta = {
+            "k": k,
+            "do_pca": bool(do_pca),
+            "variance": float(variance),
+            "random_state": int(random_state),
+            "n_images": int(len(filenames)),
+            "dims_raw": int(Z_raw.shape[1]),
+            "dims_final": int(Z_r.shape[1]),
+        }
+        (DATA_DIR / "latent_meta.json").write_text(json.dumps(meta, indent=2))
+        print(f"[latents] Saved latent arrays + meta under {DATA_DIR}")
+
+# --------------------
+# Main
+# --------------------
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--k", type=int, default=7, help="number of clusters")  # <- changed from 15 to 7
+    ap.add_argument("--no-pca", action="store_true", help="disable PCA reduction")
+    ap.add_argument("--var", type=float, default=0.90, help="variance to retain if PCA is enabled")
+    ap.add_argument("--batch_size", type=int, default=32, help="embedding batch size")
+    ap.add_argument("--seed", type=int, default=0, help="random seed for KMeans")
+    ap.add_argument("--save-latents", action="store_true", help="dump latent arrays to data/")
+    args = ap.parse_args()
+
+    # Load data
+    X, filenames = load_images(SEG_DIR)
+
+    # Load encoder (fast path to encoder.h5, else derive from autoencoder.h5)
+    enc = load_encoder()
+
+    # Embed
+    Z = embed_with_encoder(X, enc, batch_size=args.batch_size)
+    print(f"[embed] Latent shape: {Z.shape}")
+
+    # Cluster + export artifacts
+    cluster_and_export(
+        filenames,
+        Z,
+        k=args.k,
+        do_pca=(not args.no_pca),
+        variance=args.var,
+        random_state=args.seed,
+        overwrite=True,
+        save_latents=args.save_latents
+    )
+
+if __name__ == "__main__":
+    main()
