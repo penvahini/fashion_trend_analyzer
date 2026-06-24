@@ -1,34 +1,45 @@
 # src/label_clusters.py
+"""
+Sends a handful of representative images per cluster (closest to the
+cluster's CLIP centroid -- see pick_representatives) to GPT-4o-mini and asks
+for keywords + a one-line trend summary. Representatives, not the full
+cluster, to keep both image-upload cost and token usage bounded regardless
+of cluster size. Subject to OpenAI per-minute token rate limits on a fresh
+account; --clusters + --append let you retry just the clusters that 429'd
+without re-labeling everything (see the retry loop in call_openai_on_images).
+"""
 from pathlib import Path
 import os, json, argparse, base64, mimetypes, time, math
+from datetime import date
 import numpy as np
 import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI, APIError, RateLimitError
 
+from observability import track_run
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env")
 
-DATA_DIR     = PROJECT_ROOT / "data"
-SEG_DIR      = PROJECT_ROOT / "images" / "segmented_images"
-ORIG_DIR     = PROJECT_ROOT / "images" / "original_images"
-CLUSTERS_DIR = PROJECT_ROOT / "images" / "clustered_images"
-OUT_JSON     = CLUSTERS_DIR / "cluster_labels.json"
-OUT_CSV      = CLUSTERS_DIR / "cluster_labels.csv"
+RUNS_DIR             = PROJECT_ROOT / "data" / "runs"
+SEGMENTED_IMAGES_DIR = PROJECT_ROOT / "images" / "segmented_images"
+ORIGINAL_IMAGES_DIR  = PROJECT_ROOT / "images" / "original_images"
+CLUSTERED_IMAGES_DIR = PROJECT_ROOT / "images" / "clustered_images"
 
-def load_embeddings():
-    Z = np.load(DATA_DIR / "clip_embeddings.npy")
-    filenames = json.loads((DATA_DIR / "clip_filenames.json").read_text())
+def load_embeddings(run_dir: Path):
+    Z = np.load(run_dir / "clip_embeddings.npy")
+    filenames = json.loads((run_dir / "clip_filenames.json").read_text())
     return Z, filenames
 
-def load_clusters_df():
-    return pd.read_csv(CLUSTERS_DIR / "clusters.csv")
+def load_clusters_df(run_dir: Path):
+    return pd.read_csv(run_dir / "clusters.csv")
 
-def to_original_filename(seg_name: str) -> str:
-    base = seg_name.replace("_segmented", "")
-    stem = Path(base).stem
+def to_original_filename(seg_name: str, orig_dir: Path) -> str:
+    # seg_name looks like 'product_0_0_segmented.png' (one file per source
+    # photo, whole outfit) -- the original stem is everything before '_segmented'.
+    stem = seg_name.split("_segmented")[0]
     for ext in (".jpg", ".jpeg", ".png", ".webp"):
-        candidate = ORIG_DIR / f"{stem}{ext}"
+        candidate = orig_dir / f"{stem}{ext}"
         if candidate.exists():
             return candidate.name
     return f"{stem}.jpg"
@@ -38,7 +49,7 @@ def encode_image_to_data_url(path: Path) -> str:
     b64 = base64.b64encode(path.read_bytes()).decode("utf-8")
     return f"data:{mime};base64,{b64}"
 
-def pick_representatives(Z, filenames, df, per_cluster=4, use_original=True):
+def pick_representatives(Z, filenames, df, orig_dir, seg_dir, per_cluster=4, use_original=True):
     name_to_idx = {n:i for i,n in enumerate(filenames)}
     reps = {}
     for cid, sub in df.groupby("cluster"):
@@ -56,11 +67,11 @@ def pick_representatives(Z, filenames, df, per_cluster=4, use_original=True):
         paths = []
         for seg_name in chosen:
             if use_original:
-                orig_name = to_original_filename(seg_name)
-                op = ORIG_DIR / orig_name
+                orig_name = to_original_filename(seg_name, orig_dir)
+                op = orig_dir / orig_name
                 if op.exists():
                     paths.append(op); continue
-            sp = SEG_DIR / seg_name
+            sp = seg_dir / seg_name
             if sp.exists():
                 paths.append(sp)
         reps[int(cid)] = paths
@@ -165,6 +176,8 @@ def call_openai_on_images(cluster_id, image_paths, model="gpt-4o-mini", max_retr
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--run-id", type=str, default=date.today().isoformat(),
+                     help="Identifier for the cluster run to label, defaults to today's date (YYYY-MM-DD)")
     ap.add_argument("--per-cluster", type=int, default=4)
     ap.add_argument("--use-original", action="store_true")
     ap.add_argument("--model", type=str, default="gpt-4o-mini")
@@ -186,54 +199,59 @@ def main():
     )
     args = ap.parse_args()
 
-    print("[label] load embeddings/clusters")
-    Z, filenames = load_embeddings()
-    df = load_clusters_df()
+    run_dir = RUNS_DIR / args.run_id
+    orig_dir = ORIGINAL_IMAGES_DIR / args.run_id
+    seg_dir = SEGMENTED_IMAGES_DIR / args.run_id
+    OUT_JSON = run_dir / "cluster_labels.json"
+    OUT_CSV = run_dir / "cluster_labels.csv"
 
-    # Restrict to specific clusters if provided
-    if args.clusters:
-        df = df[df["cluster"].isin(args.clusters)]
-        print(f"[label] restricting to clusters: {sorted(set(args.clusters))}")
+    with track_run("label_clusters", run_id=args.run_id, model=args.model) as record:
+        print(f"[label] load embeddings/clusters for run '{args.run_id}'")
+        Z, filenames = load_embeddings(run_dir)
+        df = load_clusters_df(run_dir)
 
-    print("[label] pick representatives")
-    reps = pick_representatives(Z, filenames, df, per_cluster=args.per_cluster, use_original=args.use_original)
+        # Restrict to specific clusters if provided
+        if args.clusters:
+            df = df[df["cluster"].isin(args.clusters)]
+            print(f"[label] restricting to clusters: {sorted(set(args.clusters))}")
 
-    # ensure output dir exists
-    CLUSTERS_DIR.mkdir(parents=True, exist_ok=True)
+        print("[label] pick representatives")
+        reps = pick_representatives(Z, filenames, df, orig_dir, seg_dir, per_cluster=args.per_cluster, use_original=args.use_original)
 
-    # If appending, load existing results
-    merged_by_id = {}
-    if args.append and OUT_JSON.exists():
-        try:
-            existing = json.loads(OUT_JSON.read_text())
-            if isinstance(existing, list):
-                for x in existing:
-                    if isinstance(x, dict) and "cluster" in x:
-                        merged_by_id[int(x["cluster"])] = x
-        except Exception as e:
-            print(f"[warn] couldn't read existing {OUT_JSON}: {e}")
+        # If appending, load existing results
+        merged_by_id = {}
+        if args.append and OUT_JSON.exists():
+            try:
+                existing = json.loads(OUT_JSON.read_text())
+                if isinstance(existing, list):
+                    for x in existing:
+                        if isinstance(x, dict) and "cluster" in x:
+                            merged_by_id[int(x["cluster"])] = x
+            except Exception as e:
+                print(f"[warn] couldn't read existing {OUT_JSON}: {e}")
 
-    results = []
-    for cid in sorted(reps.keys()):
-        paths = reps[cid]
-        if not paths:
-            continue
-        print(f"[label] cluster {cid}: sending {len(paths)} images to {args.model}")
-        out = call_openai_on_images(cid, paths, model=args.model, max_retries=args.max_retries)
-        results.append(out)
-        if args.sleep_between > 0:
-            time.sleep(args.sleep_between)
+        results = []
+        for cid in sorted(reps.keys()):
+            paths = reps[cid]
+            if not paths:
+                continue
+            print(f"[label] cluster {cid}: sending {len(paths)} images to {args.model}")
+            out = call_openai_on_images(cid, paths, model=args.model, max_retries=args.max_retries)
+            results.append(out)
+            if args.sleep_between > 0:
+                time.sleep(args.sleep_between)
 
-    # Merge if requested
-    if merged_by_id:
-        for r in results:
-            merged_by_id[int(r["cluster"])] = r  # overwrite or add
-        results = [merged_by_id[k] for k in sorted(merged_by_id.keys())]
+        # Merge if requested
+        if merged_by_id:
+            for r in results:
+                merged_by_id[int(r["cluster"])] = r  # overwrite or add
+            results = [merged_by_id[k] for k in sorted(merged_by_id.keys())]
 
-    with open(OUT_JSON, "w") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    pd.DataFrame(results).to_csv(OUT_CSV, index=False)
-    print(f"[done] wrote {OUT_JSON} and {OUT_CSV}")
+        with open(OUT_JSON, "w") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        pd.DataFrame(results).to_csv(OUT_CSV, index=False)
+        record["n_clusters_labeled"] = len(results)
+        print(f"[done] wrote {OUT_JSON} and {OUT_CSV}")
 
 if __name__ == "__main__":
     main()

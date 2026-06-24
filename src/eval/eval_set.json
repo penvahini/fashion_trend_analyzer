@@ -1,0 +1,72 @@
+{
+  "retrieval_cases": [
+    {
+      "id": "r1",
+      "query": "black suede and leather footwear, pointed toe ankle boots, block heel",
+      "run_id": "2025-08-17",
+      "expected_cluster_id": 4
+    },
+    {
+      "id": "r2",
+      "query": "elegant satin maxi dress with a halter neckline, slim fit, solid colors",
+      "run_id": "2025-08-17",
+      "expected_cluster_id": 3
+    },
+    {
+      "id": "r3",
+      "query": "tailored blazers with cropped tops and high-waisted shorts, neutral minimalist",
+      "run_id": "2025-08-17",
+      "expected_cluster_id": 1
+    },
+    {
+      "id": "r4",
+      "query": "minimalist ballet flats in blue suede with a rounded toe",
+      "run_id": "2026-06-23",
+      "expected_cluster_id": 9
+    },
+    {
+      "id": "r5",
+      "query": "athleisure with color-blocking, vintage-inspired shorts and sunglasses",
+      "run_id": "2026-06-23",
+      "expected_cluster_id": 8
+    },
+    {
+      "id": "r6",
+      "query": "elegant floral pastel maxi dress with a slit and v-neck, asymmetrical hem",
+      "run_id": "2026-06-23",
+      "expected_cluster_id": 10
+    }
+  ],
+  "agent_cases": [
+    {
+      "id": "a1",
+      "question": "What footwear trends are showing up in the data?",
+      "expected_keywords_any": ["suede", "leather", "ankle boots", "block heel", "pointed toe", "ballet flats"]
+    },
+    {
+      "id": "a2",
+      "question": "Describe cluster 4 from run 2025-08-17 exactly.",
+      "expected_keywords_any": ["suede", "leather", "ankle boots", "block heel", "pointed toe"]
+    },
+    {
+      "id": "a3",
+      "question": "Is the black suede and leather footwear trend growing, stable, fading, or declining?",
+      "expected_keywords_any": ["fading"]
+    },
+    {
+      "id": "a4",
+      "question": "What's the overall state of fashion trends right now -- anything emerging or fading?",
+      "expected_keywords_any": ["emerging", "fading", "declining", "stable"]
+    },
+    {
+      "id": "a5",
+      "question": "Find images similar to product_0_0_segmented.png from run 2026-06-23 and tell me what makes them similar.",
+      "expected_keywords_any": ["similar", "similarity"]
+    },
+    {
+      "id": "a6",
+      "question": "Is there a trend toward bright neon colors in the current data?",
+      "expected_keywords_any": ["no", "not", "neutral", "don't see", "doesn't appear", "no evidence", "no neon"]
+    }
+  ]
+}

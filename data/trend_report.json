@@ -1,0 +1,334 @@
+{
+  "run_ids": [
+    "2025-08-17",
+    "2026-06-23"
+  ],
+  "min_sample_size": 5,
+  "growth_threshold_per_30d": 0.2,
+  "trends": [
+    {
+      "name": "casual, light colors, denim",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": 0.0354,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": false,
+      "days_since_last_seen": 0,
+      "latest_size": 11,
+      "latest_share_of_catalog": 0.3793,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 1,
+          "size": 10,
+          "total_in_run": 36,
+          "share_of_catalog": 0.2778,
+          "keywords": [
+            "cropped tops",
+            "high-waisted pants",
+            "shorts",
+            "blazers",
+            "neutral colors",
+            "tailored silhouettes",
+            "lightweight fabrics",
+            "elegant casual"
+          ],
+          "summary": "The collection showcases a blend of tailored and casual pieces in neutral tones, emphasizing cropped and high-waisted styles that offer a modern, sophisticated look."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 1,
+          "size": 11,
+          "total_in_run": 29,
+          "share_of_catalog": 0.3793,
+          "keywords": [
+            "casual",
+            "light colors",
+            "denim",
+            "loose fit",
+            "feminine details",
+            "comfortable",
+            "textured fabrics",
+            "elevated basics"
+          ],
+          "summary": "The trend showcases a blend of casual and elevated styles, featuring light colors and loose-fitting silhouettes with feminine details, perfect for a relaxed yet stylish look."
+        }
+      ]
+    },
+    {
+      "name": "casual, shorts, tank tops",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": true,
+      "days_since_last_seen": 0,
+      "latest_size": 4,
+      "latest_share_of_catalog": 0.1379,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 0,
+          "size": 1,
+          "total_in_run": 36,
+          "share_of_catalog": 0.0278,
+          "keywords": [
+            "satin",
+            "wide-leg",
+            "brown",
+            "polka dot",
+            "black",
+            "midi",
+            "fitted",
+            "casual"
+          ],
+          "summary": "The collection features a blend of luxurious satin and playful polka dots, showcasing a mix of relaxed silhouettes and fitted styles in earthy and monochromatic tones."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 0,
+          "size": 4,
+          "total_in_run": 29,
+          "share_of_catalog": 0.1379,
+          "keywords": [
+            "casual",
+            "shorts",
+            "tank tops",
+            "lightweight",
+            "color-blocking",
+            "sunglasses",
+            "sporty",
+            "relaxed"
+          ],
+          "summary": "The trend showcases a casual, sporty aesthetic with lightweight fabrics and color-blocking elements, emphasizing comfort and versatility for warm weather."
+        }
+      ]
+    },
+    {
+      "name": "casual, sporty, pastel colors",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": true,
+      "days_since_last_seen": 0,
+      "latest_size": 4,
+      "latest_share_of_catalog": 0.1379,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 3,
+          "size": 8,
+          "total_in_run": 36,
+          "share_of_catalog": 0.2222,
+          "keywords": [
+            "satin",
+            "maxi dress",
+            "halter neck",
+            "slim fit",
+            "solid colors",
+            "elegant",
+            "flowy",
+            "chic"
+          ],
+          "summary": "The collection showcases elegant satin maxi dresses with halter necklines, emphasizing a sleek silhouette in solid colors. This trend highlights a blend of sophistication and modern minimalism."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 3,
+          "size": 4,
+          "total_in_run": 29,
+          "share_of_catalog": 0.1379,
+          "keywords": [
+            "casual",
+            "sporty",
+            "pastel colors",
+            "graphic prints",
+            "short silhouettes",
+            "lightweight fabrics",
+            "athleisure",
+            "layered looks"
+          ],
+          "summary": "The collection showcases a blend of sporty and casual styles with a focus on pastel colors and lightweight fabrics, emphasizing short silhouettes and graphic prints for a modern athleisure vibe."
+        }
+      ]
+    },
+    {
+      "name": "athleisure, color-blocking, shorts",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": true,
+      "days_since_last_seen": 0,
+      "latest_size": 3,
+      "latest_share_of_catalog": 0.1034,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 4,
+          "size": 3,
+          "total_in_run": 36,
+          "share_of_catalog": 0.0833,
+          "keywords": [
+            "black",
+            "suede",
+            "leather",
+            "pointed toe",
+            "ankle boots",
+            "block heel",
+            "elegant",
+            "minimalist"
+          ],
+          "summary": "The collection showcases a range of black footwear, emphasizing sleek silhouettes and a mix of materials like leather and suede, ideal for sophisticated and minimalist styles."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 4,
+          "size": 3,
+          "total_in_run": 29,
+          "share_of_catalog": 0.1034,
+          "keywords": [
+            "athleisure",
+            "color-blocking",
+            "shorts",
+            "casual",
+            "lightweight",
+            "vintage-inspired",
+            "sunglasses",
+            "sporty"
+          ],
+          "summary": "The trend showcases a blend of athleisure and casual styles, featuring vibrant color-blocking and relaxed silhouettes ideal for warm weather. Key elements include sporty jackets paired with shorts and retro accessories."
+        }
+      ]
+    },
+    {
+      "name": "casual, denim, shorts",
+      "status": "emerging",
+      "elapsed_days_since_prev_appearance": null,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": false,
+      "days_since_last_seen": 0,
+      "latest_size": 3,
+      "latest_share_of_catalog": 0.1034,
+      "history": [
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 6,
+          "size": 3,
+          "total_in_run": 29,
+          "share_of_catalog": 0.1034,
+          "keywords": [
+            "casual",
+            "denim",
+            "shorts",
+            "graphic",
+            "colorful",
+            "relaxed",
+            "sporty",
+            "lightweight"
+          ],
+          "summary": "The collection showcases a blend of casual and sporty styles, featuring denim and relaxed silhouettes with vibrant accents, ideal for warm weather."
+        }
+      ]
+    },
+    {
+      "name": "maxi dress, red, bodycon",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": true,
+      "days_since_last_seen": 0,
+      "latest_size": 2,
+      "latest_share_of_catalog": 0.069,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 2,
+          "size": 9,
+          "total_in_run": 36,
+          "share_of_catalog": 0.25,
+          "keywords": [
+            "satin",
+            "wide-leg",
+            "neutral tones",
+            "cropped tops",
+            "layering",
+            "elegant",
+            "casual chic"
+          ],
+          "summary": "The collection showcases a blend of elegant and casual styles, featuring wide-leg silhouettes and satin fabrics in neutral tones, perfect for versatile layering."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 2,
+          "size": 2,
+          "total_in_run": 29,
+          "share_of_catalog": 0.069,
+          "keywords": [
+            "maxi dress",
+            "red",
+            "bodycon",
+            "sleek silhouette",
+            "spaghetti straps",
+            "ruched detailing",
+            "elegant",
+            "evening wear"
+          ],
+          "summary": "The collection showcases a trend towards elegant, body-hugging dresses in rich red tones, featuring sleek silhouettes and sophisticated details like spaghetti straps and ruching, perfect for evening occasions."
+        }
+      ]
+    },
+    {
+      "name": "floral, pastel, maxi",
+      "status": "stable",
+      "elapsed_days_since_prev_appearance": 310,
+      "rate_per_30d": null,
+      "insufficient_time_elapsed": false,
+      "insufficient_sample_size": true,
+      "days_since_last_seen": 0,
+      "latest_size": 2,
+      "latest_share_of_catalog": 0.069,
+      "history": [
+        {
+          "run_id": "2025-08-17",
+          "cluster_id": 5,
+          "size": 5,
+          "total_in_run": 36,
+          "share_of_catalog": 0.1389,
+          "keywords": [
+            "maxi dress",
+            "casual elegance",
+            "black",
+            "pastel",
+            "polka dots",
+            "tailored",
+            "flowy",
+            "minimalist"
+          ],
+          "summary": "The collection features a blend of casual elegance and tailored pieces, with a focus on black and pastel colors, showcasing both flowy silhouettes and structured designs."
+        },
+        {
+          "run_id": "2026-06-23",
+          "cluster_id": 5,
+          "size": 2,
+          "total_in_run": 29,
+          "share_of_catalog": 0.069,
+          "keywords": [
+            "floral",
+            "pastel",
+            "maxi",
+            "slit",
+            "sleeveless",
+            "lightweight",
+            "asymmetrical",
+            "elegant"
+          ],
+          "summary": "The collection features floral patterns in soft pastel colors, emphasizing elegant silhouettes with maxi lengths and stylish slits, perfect for warm weather occasions."
+        }
+      ]
+    }
+  ]
+}

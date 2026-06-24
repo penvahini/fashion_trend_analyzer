@@ -1,0 +1,9 @@
+venv/
+images/
+data/
+logs/
+.git/
+__pycache__/
+*.pyc
+.env
+.api_endpoint

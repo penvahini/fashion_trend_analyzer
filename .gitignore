@@ -18,3 +18,4 @@ venv/
 Thumbs.db
 models/sam_weights.pth
 .env
+.api_endpoint

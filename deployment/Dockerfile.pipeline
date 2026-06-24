@@ -1,0 +1,29 @@
+# deployment/Dockerfile.pipeline
+#
+# Containerizes the full pipeline (src/run_pipeline.py: scrape -> segment ->
+# cluster -> label -> trend_tracker -> sync) so it can run as an ECS Fargate
+# task instead of on a developer's machine. This is the target the
+# scrape-trigger Lambda's ecs:RunTask call (see src/lambdas/scrape_trigger_handler.py)
+# is meant to launch once a task definition is registered from this image.
+#
+# Large image: ships SAM ViT-H weights (~2.4GB) + torch/tensorflow/ultralytics.
+# That's expected for this workload -- Fargate has no problem with multi-GB
+# images, this just isn't something you'd want to cold-start in Lambda.
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 libglib2.0-0 git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m playwright install --with-deps chromium
+
+COPY src/ src/
+COPY models/ models/
+
+ENV PYTHONUNBUFFERED=1
+
+ENTRYPOINT ["python3", "src/run_pipeline.py"]

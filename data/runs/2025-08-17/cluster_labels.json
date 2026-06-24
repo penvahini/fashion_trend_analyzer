@@ -1,0 +1,137 @@
+[
+  {
+    "cluster": 0,
+    "keywords": [
+      "satin",
+      "wide-leg",
+      "brown",
+      "polka dot",
+      "black",
+      "midi",
+      "fitted",
+      "casual"
+    ],
+    "summary": "The collection features a blend of luxurious satin and playful polka dots, showcasing a mix of relaxed silhouettes and fitted styles in earthy and monochromatic tones.",
+    "examples": [
+      "product_1_1.jpg",
+      "product_19_19.jpg"
+    ]
+  },
+  {
+    "cluster": 1,
+    "keywords": [
+      "cropped tops",
+      "high-waisted pants",
+      "shorts",
+      "blazers",
+      "neutral colors",
+      "tailored silhouettes",
+      "lightweight fabrics",
+      "elegant casual"
+    ],
+    "summary": "The collection showcases a blend of tailored and casual pieces in neutral tones, emphasizing cropped and high-waisted styles that offer a modern, sophisticated look.",
+    "examples": [
+      "product_27_27.jpg",
+      "product_32_32.jpg",
+      "product_20_20.jpg",
+      "product_5_5.jpg"
+    ]
+  },
+  {
+    "cluster": 2,
+    "keywords": [
+      "satin",
+      "wide-leg",
+      "neutral tones",
+      "cropped tops",
+      "layering",
+      "elegant",
+      "casual chic"
+    ],
+    "summary": "The collection showcases a blend of elegant and casual styles, featuring wide-leg silhouettes and satin fabrics in neutral tones, perfect for versatile layering.",
+    "examples": [
+      "product_16_16.jpg",
+      "product_33_33.jpg",
+      "product_0_0.jpg",
+      "product_14_14.jpg"
+    ]
+  },
+  {
+    "cluster": 3,
+    "keywords": [
+      "satin",
+      "maxi dress",
+      "halter neck",
+      "slim fit",
+      "solid colors",
+      "elegant",
+      "flowy",
+      "chic"
+    ],
+    "summary": "The collection showcases elegant satin maxi dresses with halter necklines, emphasizing a sleek silhouette in solid colors. This trend highlights a blend of sophistication and modern minimalism.",
+    "examples": [
+      "product_11_11.jpg",
+      "product_25_25.jpg",
+      "product_28_28.jpg",
+      "product_7_7.jpg"
+    ]
+  },
+  {
+    "cluster": 4,
+    "keywords": [
+      "black",
+      "suede",
+      "leather",
+      "pointed toe",
+      "ankle boots",
+      "block heel",
+      "elegant",
+      "minimalist"
+    ],
+    "summary": "The collection showcases a range of black footwear, emphasizing sleek silhouettes and a mix of materials like leather and suede, ideal for sophisticated and minimalist styles.",
+    "examples": [
+      "product_30_30.jpg",
+      "product_13_13.jpg",
+      "product_37_37.jpg"
+    ]
+  },
+  {
+    "cluster": 5,
+    "keywords": [
+      "maxi dress",
+      "casual elegance",
+      "black",
+      "pastel",
+      "polka dots",
+      "tailored",
+      "flowy",
+      "minimalist"
+    ],
+    "summary": "The collection features a blend of casual elegance and tailored pieces, with a focus on black and pastel colors, showcasing both flowy silhouettes and structured designs.",
+    "examples": [
+      "product_9_9.jpg",
+      "product_29_29.jpg",
+      "product_38_38.jpg",
+      "product_35_35.jpg"
+    ]
+  },
+  {
+    "cluster": 6,
+    "keywords": [
+      "elegant",
+      "minimalist",
+      "neutral colors",
+      "leather",
+      "varied heel heights",
+      "pointed toe",
+      "strappy",
+      "metallic accents"
+    ],
+    "summary": "The collection showcases a blend of elegant and minimalist footwear, featuring neutral tones and varied heel heights, emphasizing both comfort and style.",
+    "examples": [
+      "product_26_26.jpg",
+      "product_34_34.jpg",
+      "product_8_8.jpg"
+    ]
+  }
+]

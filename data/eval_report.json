@@ -1,0 +1,136 @@
+{
+  "retrieval_accuracy": 1.0,
+  "agent_keyword_pass_rate": 1.0,
+  "agent_hallucination_rate": 0.0,
+  "retrieval_cases": [
+    {
+      "id": "r1",
+      "query": "black suede and leather footwear, pointed toe ankle boots, block heel",
+      "expected_cluster_id": 4,
+      "retrieved_cluster_ids": [
+        4,
+        6
+      ],
+      "passed": true
+    },
+    {
+      "id": "r2",
+      "query": "elegant satin maxi dress with a halter neckline, slim fit, solid colors",
+      "expected_cluster_id": 3,
+      "retrieved_cluster_ids": [
+        3,
+        5
+      ],
+      "passed": true
+    },
+    {
+      "id": "r3",
+      "query": "tailored blazers with cropped tops and high-waisted shorts, neutral minimalist",
+      "expected_cluster_id": 1,
+      "retrieved_cluster_ids": [
+        1,
+        2
+      ],
+      "passed": true
+    },
+    {
+      "id": "r4",
+      "query": "minimalist ballet flats in blue suede with a rounded toe",
+      "expected_cluster_id": 9,
+      "retrieved_cluster_ids": [
+        9
+      ],
+      "passed": true
+    },
+    {
+      "id": "r5",
+      "query": "athleisure with color-blocking, vintage-inspired shorts and sunglasses",
+      "expected_cluster_id": 8,
+      "retrieved_cluster_ids": [
+        8,
+        1,
+        7
+      ],
+      "passed": true
+    },
+    {
+      "id": "r6",
+      "query": "elegant floral pastel maxi dress with a slit and v-neck, asymmetrical hem",
+      "expected_cluster_id": 10,
+      "retrieved_cluster_ids": [
+        10
+      ],
+      "passed": true
+    }
+  ],
+  "agent_cases": [
+    {
+      "id": "a1",
+      "question": "What footwear trends are showing up in the data?",
+      "answer": "Here are the footwear trends showing up in the data:\n\n1. **Elegant Minimalist Footwear**  \n   - **Keywords**: elegant, minimalist, neutral colors, leather, varied heel heights, pointed toe, strappy, metallic accents  \n   - **Summary**: This trend showcases a blend of elegant and minimalist footwear, featuring neutral tones and varied heel heights, emphasizing both comfort and style.\n\n2. **Comfortable Ballet Flats**  \n   - **Keywords**: ballet flats, blue, suede, minimalist, comfortable, rounded toe, casual  \n   - **Summary**: This trend focuses on comfortable, minimalist footwear, particularly in vibrant colors like blue, emphasizing both style and ease.\n\n3. **Sleek Black Footwear**  \n   - **Keywords**: black, suede, leather, pointed toe, ankle boots, block heel, elegant, minimalist  \n   - **Summary**: This collection emphasizes a range of black footwear with sleek silhouettes and a mix of materials like leather and suede, ideal for sophisticated and minimalist styles.\n\n4. **Sporty Casual Footwear**  \n   - **Keywords**: casual, sporty, pastel colors, graphic prints, short silhouettes, lightweight fabrics, athleisure, layered looks  \n   - **Summary**: This trend showcases a blend of sporty and casual styles with a focus on pastel colors and lightweight fabrics, emphasizing short silhouettes and graphic prints for a modern athleisure vibe.\n\n5. **Athleisure and Casual Styles**  \n   - **Keywords**: athleisure, color-blocking, shorts, casual, lightweight, vintage-inspired, sunglasses, sporty  \n   - **Summary**: This trend emphasizes a blend of athleisure and casual styles, featuring vibrant color-blocking and relaxed silhouettes ideal for warm weather, with key elements like sporty jackets paired with shorts and retro accessories.",
+      "tool_calls": [
+        "search_trends"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant's answer accurately reflects the tool outputs without any fabricated facts, using the correct keywords and summaries from the data."
+    },
+    {
+      "id": "a2",
+      "question": "Describe cluster 4 from run 2025-08-17 exactly.",
+      "answer": "Cluster 4 from the run on 2025-08-17 contains 3 items and is characterized by the following details:\n\n- **Keywords**: black, suede, leather, pointed toe, ankle boots, block heel, elegant, minimalist.\n- **Summary**: The collection showcases a range of black footwear, emphasizing sleek silhouettes and a mix of materials like leather and suede, ideal for sophisticated and minimalist styles.\n- **Filenames**: \n  - product_13_13_segmented.png\n  - product_30_30_segmented.png\n  - product_37_37_segmented.png",
+      "tool_calls": [
+        "get_cluster"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant's answer accurately reflects the details provided in the tool outputs for cluster 4 from the specified run."
+    },
+    {
+      "id": "a3",
+      "question": "Is the black suede and leather footwear trend growing, stable, fading, or declining?",
+      "answer": "The trend for black suede and leather footwear is currently labeled as **fading**. This indicates that its presence in fashion collections is decreasing over time.",
+      "tool_calls": [
+        "search_trends",
+        "get_trend_report"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant accurately stated that the trend for black suede and leather footwear is labeled as fading, which is supported by the tool outputs."
+    },
+    {
+      "id": "a4",
+      "question": "What's the overall state of fashion trends right now -- anything emerging or fading?",
+      "answer": "Currently, the overall state of fashion trends reveals a mix of emerging and fading styles:\n\n### Emerging Trends:\n1. **Casual, sporty, pastel colors** - Emphasizes lightweight fabrics and short silhouettes with graphic prints.\n2. **Casual, denim, shorts** - Features casual and sporty styles ideal for warm weather with vibrant accents.\n3. **Athleisure, color-blocking, shorts** - Blends athleisure and casual styles with vibrant color-blocking.\n4. **Floral, pastel, maxi** - Showcases elegant maxi dresses with floral patterns in soft pastel colors.\n5. **Casual, colorful, lightweight** - Features vibrant colors and lightweight fabrics, suitable for summer.\n6. **Ballet flats, blue, suede** - A focus on comfortable, minimalist footwear, particularly in vibrant blue.\n\n### Fading Trends:\n1. **Maxi dress, casual elegance, black** - This style is seeing a decrease in popularity.\n2. **Black, suede, leather** - A trend that is losing traction, particularly in sophisticated and minimalist footwear.\n3. **Satin, wide-leg, brown** - This trend is also fading, emphasizing relaxed silhouettes in earthy and monochromatic tones.\n\nThe status of these trends shows a dynamic landscape with new styles emerging while others decline.",
+      "tool_calls": [
+        "get_trend_report"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant's answer accurately reflects the trends and their statuses as provided in the tool outputs without any fabricated facts."
+    },
+    {
+      "id": "a5",
+      "question": "Find images similar to product_0_0_segmented.png from run 2026-06-23 and tell me what makes them similar.",
+      "answer": "I found images similar to \"product_0_0_segmented.png\" from the run on 2026-06-23 based on CLIP embedding distance. Here are the similar images along with their similarity scores:\n\n1. \"product_27_27_segmented.png\" - Similarity: 0.6494\n2. \"product_29_29_segmented.png\" - Similarity: 0.6444\n3. \"product_2_2_segmented.png\" - Similarity: 0.6435\n4. \"product_5_5_segmented.png\" - Similarity: 0.6398\n5. \"product_34_34_segmented.png\" - Similarity: 0.6333\n\nHowever, I do not have a visual description of what specifically makes them similar.",
+      "tool_calls": [
+        "similarity_search"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant's answer accurately reflects the tool outputs without any fabricated facts."
+    },
+    {
+      "id": "a6",
+      "question": "Is there a trend toward bright neon colors in the current data?",
+      "answer": "There isn't specific evidence pointing to a trend towards bright neon colors in the current data. The trending terms primarily revolve around themes such as \"casual,\" \"colorful,\" \"lightweight,\" and \"vibrant,\" but none specifically mention neon or bright neon colors. \n\nThe related trends showcase a mix of pastel and vibrant colors but do not explicitly indicate the presence of neon hues. If you're interested in trends closely associated with color, the \"casual, colorful, lightweight\" (emerging) and \"casual, sporty, pastel colors\" (emerging) trends might be relevant, but they lean more towards lighter and pastel shades rather than neon.",
+      "tool_calls": [
+        "search_trends",
+        "get_trend_report"
+      ],
+      "keyword_check_passed": true,
+      "grounded": true,
+      "groundedness_reason": "The assistant accurately reflects the tool outputs, which do not indicate a trend towards bright neon colors, focusing instead on pastel and vibrant colors."
+    }
+  ]
+}

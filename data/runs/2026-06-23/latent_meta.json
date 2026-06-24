@@ -1,0 +1,11 @@
+{
+  "run_id": "2026-06-23",
+  "k_new_max": 6,
+  "do_pca": true,
+  "variance": 0.9,
+  "random_state": 0,
+  "n_images": 40,
+  "dims_raw": 512,
+  "n_matched_existing_lineages": 22,
+  "n_new_lineages": 6
+}

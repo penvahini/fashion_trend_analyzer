@@ -1,0 +1,139 @@
+[
+  {
+    "cluster": 0,
+    "keywords": [
+      "casual",
+      "shorts",
+      "tank tops",
+      "lightweight",
+      "color-blocking",
+      "sunglasses",
+      "sporty",
+      "relaxed"
+    ],
+    "summary": "The trend showcases a casual, sporty aesthetic with lightweight fabrics and color-blocking elements, emphasizing comfort and versatility for warm weather.",
+    "examples": [
+      "product_8_8.jpg",
+      "product_14_14.jpg",
+      "product_30_30.jpg",
+      "product_0_0.jpg"
+    ]
+  },
+  {
+    "cluster": 1,
+    "keywords": [
+      "casual",
+      "light colors",
+      "denim",
+      "loose fit",
+      "feminine details",
+      "comfortable",
+      "textured fabrics",
+      "elevated basics"
+    ],
+    "summary": "The trend showcases a blend of casual and elevated styles, featuring light colors and loose-fitting silhouettes with feminine details, perfect for a relaxed yet stylish look.",
+    "examples": [
+      "product_22_22.jpg",
+      "product_39_39.jpg",
+      "product_21_21.jpg",
+      "product_27_27.jpg"
+    ]
+  },
+  {
+    "cluster": 2,
+    "keywords": [
+      "maxi dress",
+      "red",
+      "bodycon",
+      "sleek silhouette",
+      "spaghetti straps",
+      "ruched detailing",
+      "elegant",
+      "evening wear"
+    ],
+    "summary": "The collection showcases a trend towards elegant, body-hugging dresses in rich red tones, featuring sleek silhouettes and sophisticated details like spaghetti straps and ruching, perfect for evening occasions.",
+    "examples": [
+      "product_19_19.jpg",
+      "product_37_37.jpg",
+      "product_32_32.jpg"
+    ]
+  },
+  {
+    "cluster": 3,
+    "keywords": [
+      "casual",
+      "sporty",
+      "pastel colors",
+      "graphic prints",
+      "short silhouettes",
+      "lightweight fabrics",
+      "athleisure",
+      "layered looks"
+    ],
+    "summary": "The collection showcases a blend of sporty and casual styles with a focus on pastel colors and lightweight fabrics, emphasizing short silhouettes and graphic prints for a modern athleisure vibe.",
+    "examples": [
+      "product_10_10.jpg",
+      "product_6_6.jpg",
+      "product_1_1.jpg",
+      "product_11_11.jpg"
+    ]
+  },
+  {
+    "cluster": 4,
+    "keywords": [
+      "athleisure",
+      "color-blocking",
+      "shorts",
+      "casual",
+      "lightweight",
+      "vintage-inspired",
+      "sunglasses",
+      "sporty"
+    ],
+    "summary": "The trend showcases a blend of athleisure and casual styles, featuring vibrant color-blocking and relaxed silhouettes ideal for warm weather. Key elements include sporty jackets paired with shorts and retro accessories.",
+    "examples": [
+      "product_5_5.jpg",
+      "product_4_4.jpg",
+      "product_3_3.jpg"
+    ]
+  },
+  {
+    "cluster": 5,
+    "keywords": [
+      "floral",
+      "pastel",
+      "maxi",
+      "slit",
+      "sleeveless",
+      "lightweight",
+      "asymmetrical",
+      "elegant"
+    ],
+    "summary": "The collection features floral patterns in soft pastel colors, emphasizing elegant silhouettes with maxi lengths and stylish slits, perfect for warm weather occasions.",
+    "examples": [
+      "product_17_17.jpg",
+      "product_35_35.jpg",
+      "product_12_12.jpg"
+    ]
+  },
+  {
+    "cluster": 6,
+    "keywords": [
+      "casual",
+      "denim",
+      "shorts",
+      "graphic",
+      "colorful",
+      "relaxed",
+      "sporty",
+      "lightweight"
+    ],
+    "summary": "The collection showcases a blend of casual and sporty styles, featuring denim and relaxed silhouettes with vibrant accents, ideal for warm weather.",
+    "examples": [
+      "product_16_16.jpg",
+      "product_34_34.jpg",
+      "product_15_15.jpg",
+      "product_26_26.jpg"
+    ]
+  }
+]

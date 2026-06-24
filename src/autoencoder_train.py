@@ -1,4 +1,16 @@
 # src/autoencoder_train.py
+"""
+Early experiment: a custom convolutional autoencoder trained on segmented
+garment images, used as an alternative to CLIP for embedding/clustering.
+
+Not part of the active pipeline (cluster_pipeline.py uses pretrained CLIP
+embeddings instead) -- kept for reference. CLIP won out because it's a
+pretrained model with strong general visual-semantic representations, so it
+clusters meaningfully with ~40-200 images per run; a from-scratch autoencoder
+needs far more training data per run to learn a comparable embedding space,
+which doesn't fit a low-volume, run-scoped scraping cadence. Sample outputs
+from this script live in data/legacy_autoencoder_experiment/.
+"""
 from pathlib import Path
 import argparse, json
 import numpy as np

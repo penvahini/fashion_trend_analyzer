@@ -19,3 +19,8 @@ langchain
 langchain-openai 
 tiktoken
 streamlit
+boto3
+openai
+faiss-cpu
+mcp
+plotly

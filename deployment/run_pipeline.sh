@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
 # Fashion Trend Analyzer – end-to-end deployment runner
-# Runs: venv + deps → scrape → segment → embed+cluster → label → (optionally) dashboard
+# Runs: venv + deps -> src/run_pipeline.py (scrape -> segment -> cluster -> label -> trend_tracker -> sync) -> (optionally) dashboard
+#
+# This used to manually invoke each stage by module path (src.scrape_reformation,
+# src.clip_embed_cluster, ...) which no longer exist after the pipeline was
+# restructured around run_id-scoped runs and incremental clustering. It now
+# delegates the actual pipeline to src/run_pipeline.py, which is the single
+# source of truth for stage order (see also: the dashboard's "Run New Scrape"
+# button and scripts/run_pipeline_cron.sh, which call the same script).
 
 set -Eeuo pipefail
 
 # --- Config (defaults) --------------------------------------------------------
-K=7                         # k-means clusters
-PER_CLUSTER=4               # images per cluster for labeling
-MODEL="gpt-4o-mini"         # LLM for labeling
-USE_ORIGINAL=true           # prefer originals when labeling
-LAUNCH_DASHBOARD=true       # run Streamlit at the end
-CLEAN=false                 # remove previous intermediates
+RUN_ID=""                   # empty = let run_pipeline.py default to a timestamp
+MAX_IMAGES=40                # images to scrape
+K=7                          # max new clusters to discover among unmatched images
+MODEL="gpt-4o-mini"          # LLM for labeling
+USE_ORIGINAL=true            # prefer originals when labeling
+LAUNCH_DASHBOARD=true        # run Streamlit at the end
+CLEAN=false                  # remove previous intermediates
 PYTHON_BIN="${PYTHON_BIN:-python3}"  # allow override, e.g., PYTHON_BIN=python
 
 # --- CLI flags ---------------------------------------------------------------
@@ -19,13 +27,14 @@ usage() {
 Usage: $(basename "$0") [options]
 
 Options:
-  -k <int>        Number of clusters (default: ${K})
-  -p <int>        Images per cluster for labeling (default: ${PER_CLUSTER})
-  -m <str>        LLM model for labeling (default: ${MODEL})
-  --no-original   Do NOT pass --use-original to labeling step
-  --no-dashboard  Skip launching Streamlit dashboard
-  --clean         Clean previous intermediates (images/segmented, images/clustered, data/derived)
-  -h, --help      Show this help
+  --run-id <id>     Run identifier (default: run_pipeline.py's timestamp default)
+  --max-images <n>  Images to scrape (default: ${MAX_IMAGES})
+  -k <int>          Max new clusters to discover among unmatched images (default: ${K})
+  -m <str>          LLM model for labeling (default: ${MODEL})
+  --no-original     Do NOT pass --use-original to labeling step
+  --no-dashboard     Skip launching Streamlit dashboard
+  --clean            Clean previous intermediates (images/segmented, images/clustered)
+  -h, --help         Show this help
 Env:
   PYTHON_BIN=python3|python   Override python binary
 EOF
@@ -33,8 +42,9 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --run-id) RUN_ID="$2"; shift 2 ;;
+    --max-images) MAX_IMAGES="$2"; shift 2 ;;
     -k) K="$2"; shift 2 ;;
-    -p) PER_CLUSTER="$2"; shift 2 ;;
     -m) MODEL="$2"; shift 2 ;;
     --no-original) USE_ORIGINAL=false; shift ;;
     --no-dashboard) LAUNCH_DASHBOARD=false; shift ;;
@@ -65,11 +75,11 @@ fi
 
 # --- Optional clean -----------------------------------------------------------
 if [[ "${CLEAN}" == "true" ]]; then
-  log "Cleaning previous intermediates…"
+  log "Cleaning previous intermediates… (NOTE: does not reset data/cluster_registry.json -- "
+  log "delete that yourself if you want a clean incremental-clustering bootstrap)"
   rm -rf "${ROOT_DIR}/images/segmented_images" \
-         "${ROOT_DIR}/images/clustered_images" \
-         "${ROOT_DIR}/data/derived"
-  mkdir -p "${ROOT_DIR}/images/segmented_images" "${ROOT_DIR}/images/clustered_images" "${ROOT_DIR}/data/derived"
+         "${ROOT_DIR}/images/clustered_images"
+  mkdir -p "${ROOT_DIR}/images/segmented_images" "${ROOT_DIR}/images/clustered_images"
 fi
 
 # --- Python & deps ------------------------------------------------------------
@@ -88,25 +98,19 @@ pip install -r "${ROOT_DIR}/requirements.txt" | tee "${LOG_DIR}/00_requirements_
 log "Installing Playwright browser…"
 python -m playwright install chromium | tee "${LOG_DIR}/00_playwright_$(timestamp).log"
 
-# --- Steps -------------------------------------------------------------------
-set -x
-
-# 1) Scrape
-python -m src.scrape_reformation 2>&1 | tee "${LOG_DIR}/01_scrape_$(timestamp).log"
-
-# 2) Segment (SAM + custom YOLO)
-python -m src.segment 2>&1 | tee "${LOG_DIR}/02_segment_$(timestamp).log"
-
-# 3) Embed + cluster (CLIP + KMeans)
-python -m src.clip_embed_cluster --k "${K}" 2>&1 | tee "${LOG_DIR}/03_embed_cluster_$(timestamp).log"
-
-# 4) Label clusters (LLM summaries + keywords)
-LABEL_ARGS=(--per-cluster "${PER_CLUSTER}" --model "${MODEL}")
-if [[ "${USE_ORIGINAL}" == "true" ]]; then
-  LABEL_ARGS+=(--use-original)
+# --- Run the pipeline ---------------------------------------------------------
+# scrape -> segment (garment-level) -> cluster (incremental, registry-based) ->
+# label -> trend_tracker -> sync to S3 (best-effort if AWS env vars aren't set)
+RUN_ARGS=(--max-images "${MAX_IMAGES}" --k "${K}" --model "${MODEL}")
+if [[ -n "${RUN_ID}" ]]; then
+  RUN_ARGS+=(--run-id "${RUN_ID}")
 fi
-python -m src.label_clusters "${LABEL_ARGS[@]}" 2>&1 | tee "${LOG_DIR}/04_label_$(timestamp).log"
+if [[ "${USE_ORIGINAL}" == "false" ]]; then
+  RUN_ARGS+=(--no-original)
+fi
 
+set -x
+python "${ROOT_DIR}/src/run_pipeline.py" "${RUN_ARGS[@]}" 2>&1 | tee "${LOG_DIR}/pipeline_$(timestamp).log"
 set +x
 
 # 5) Dashboard (optional)

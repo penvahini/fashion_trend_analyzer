@@ -1,0 +1,53 @@
+services:
+  localstack:
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sqs,lambda,apigateway,apigatewayv2,iam,cloudwatch,logs,events,scheduler
+      - DEBUG=0
+      - LAMBDA_EXECUTOR=docker-reuse
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  ingestion_worker:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.worker
+    depends_on:
+      - localstack
+    environment:
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_BUCKET=fashion-trend-images
+      - SQS_QUEUE_NAME=fashion-trend-ingestion
+    volumes:
+      - ./images:/app/images
+      - ./data:/app/data
+
+  # Not started by default (profile-gated): the full pipeline container is
+  # multi-GB (SAM ViT-H weights + torch/tensorflow/ultralytics) and slow to
+  # build. Run explicitly with: docker compose --profile pipeline run pipeline
+  pipeline:
+    profiles: ["pipeline"]
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.pipeline
+    environment:
+      - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - S3_BUCKET=fashion-trend-images
+      - SQS_QUEUE_NAME=fashion-trend-ingestion
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - ./images:/app/images
+      - ./data:/app/data
+
+volumes:
+  localstack_data:
