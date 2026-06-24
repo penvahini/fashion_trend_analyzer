@@ -87,13 +87,44 @@ Repository layout
 
 Setup
 ------
+Two requirements files, for two very different jobs:
+
+    requirements.txt           lean -- just the Streamlit dashboard's actual
+                                import chain (streamlit, requests, pandas,
+                                plotly, pillow, openai, faiss-cpu, numpy).
+                                This is what Streamlit Community Cloud
+                                installs when deploying this repo.
+    requirements-pipeline.txt   everything -- adds the heavy CV/ML stack
+                                (torch, tensorflow, ultralytics,
+                                segment-anything, playwright, transformers,
+                                open_clip, langchain) needed to actually run
+                                the scrape/segment/cluster/label pipeline.
+
+If you're running the full pipeline locally:
+
     python3 -m venv venv && source venv/bin/activate
-    pip install -r requirements.txt
+    pip install -r requirements-pipeline.txt
     playwright install chromium
+
+If you're only running the dashboard against an already-synced API:
+
+    pip install -r requirements.txt
 
 Put `OPENAI_API_KEY` in a `.env` file at the repo root (used for LLM
 labeling, RAG embeddings, and the agent). Model weights (`models/*.pt`,
 `models/*.pth`) are expected locally; they're large and not checked in.
+
+**A public Streamlit Cloud deploy of this dashboard will not show live
+data.** `dashboard.py` fetches all cluster/trend data from a deployed API
+Gateway URL (`.api_endpoint`/`API_BASE_URL`), and that API only exists on a
+LocalStack instance running on your own machine -- Streamlit Cloud's
+servers can't reach `localhost`. Getting a public deploy to show real data
+would mean standing up the API on real AWS (see "We have not connected this
+to a real AWS account" below) and pointing `API_BASE_URL` at it via
+Streamlit secrets, plus setting `OPENAI_API_KEY` as a secret for the Chat
+tab. Until then, a public deploy is useful for showing the UI shell, not
+live functionality -- screenshots/a recorded demo of the locally-running
+app are the more honest way to show this off.
 
 Quick start (single machine, no AWS at all)
 ---------------------------------------------

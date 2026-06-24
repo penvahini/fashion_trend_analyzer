@@ -1,0 +1,27 @@
+playwright
+beautifulsoup4
+requests
+numpy
+pandas
+matplotlib
+opencv-python-headless
+torch
+torchvision   # often needed alongside torch
+git+https://github.com/facebookresearch/segment-anything.git
+ultralytics
+supervision
+tensorflow
+scikit-learn
+open-clip-torch  
+transformers 
+pillow
+langchain 
+langchain-openai 
+tiktoken
+streamlit
+boto3
+openai
+faiss-cpu
+mcp
+plotly
+python-dotenv
