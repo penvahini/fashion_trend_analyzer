@@ -1,15 +1,8 @@
 Fashion Trend Analyzer
 =======================
 
-A live demo was previously deployed at
-[fashion-trend-analyzer.streamlit.app](https://fashion-trend-analyzer.streamlit.app/),
-but it's stale -- it would be running the pipeline as it existed before this
-README's rewrite (no run-scoping, no distributed ingestion/API/RAG/agent
-layers, single global cluster set), and the link currently redirects to a
-Streamlit Cloud sign-in wall rather than loading directly, which usually
-means the app has gone to sleep. Treat it as not representative of the
-system described below; redeploying it against the current code is on the
-list, not done yet.
+A live demo is deployed at
+[fashion-trend-analyzer.streamlit.app](https://fashion-trend-analyzer.streamlit.app/)
 
 An end-to-end system that scrapes apparel product images, segments each
 outfit out of its background (YOLO + SAM), embeds it with CLIP, clusters
