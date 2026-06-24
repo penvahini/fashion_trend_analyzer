@@ -1,8 +1,9 @@
 Fashion Trend Analyzer
 =======================
 
-A live demo is deployed at
-[fashion-trend-analyzer.streamlit.app](https://fashion-trend-analyzer.streamlit.app/)
+A recorded demo is shown here: https://drive.google.com/file/d/1ZiJyt7SKd5leM1CGajuxnkMcF_w0Saqm/view?usp=sharing 
+
+
 
 An end-to-end system that scrapes apparel product images, segments each
 outfit out of its background (YOLO + SAM), embeds it with CLIP, clusters
